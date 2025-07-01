@@ -89,7 +89,7 @@ class retriever:
             raise ValueError("未知模式")
         print("--------------------构建完成---------------------\n")
     
-    def get_retrieval(self, query, k=10, level=0):
+    def get_retrieval(self, query, k=10, level=0, proctol_name = None):
         '''
         :param k, 最近邻向量数量
         :param level, 结果过滤等级
@@ -103,11 +103,16 @@ class retriever:
         D, I = self.index.search(q_emb, k)
         index_list = I[0]
         retri_docs = [self.docs[t] for t in index_list]
+        if proctol_name != None:
+            # exact match
+            for doc in self.docs:
+                if doc.get('Name', None) == proctol_name:
+                    retri_docs.append(doc)
         if level > 0:
             tmp = []
             for doc in retri_docs:
                 name = doc.get('Name', None)
-                if name in query:
+                if name.lower() in query.lower():
                     tmp.append(doc)
             retri_docs = tmp
 
